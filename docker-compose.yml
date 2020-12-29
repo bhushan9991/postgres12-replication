@@ -1,0 +1,39 @@
+version: "3"
+services:
+  master_db:
+      build: ./docker/postgres_master/
+      container_name: master.db
+      restart: unless-stopped
+      ports:
+        - 5451:5432
+      volumes:
+        - pgdata_master:/var/lib/postgresql/data
+      env_file:
+        - .env
+      environment:
+        - PGDATA=/var/lib/postgresql/data
+        - POSTGRESQL_REPLICATION_MODE=${MASTER_REPLICATION_MODE}
+        - PG_REP_USER=${DB_REPLICATION_USER}
+        - PG_REP_PASSWORD=${DB_REPLICATION_PASSWORD}
+        - POSTGRES_DB=${DATABASE}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
+        - POSTGRES_USER=${DB_USER}
+  slave_db:
+      build: ./docker/postgres_slave/
+      container_name: slave.db
+      restart: unless-stopped
+      volumes:
+        - pgdata_slave:/var/lib/postgresql/data
+      ports:
+        - 7571:5432
+      depends_on:
+        - master_db
+      env_file:
+        - .env
+      environment:
+        - PGDATA=/var/lib/postgresql/data
+        - POSTGRESQL_REPLICATION_MODE=${SLAVE_REPLICATION_MODE}
+        - PG_REP_USER=${DB_REPLICATION_USER}
+        - PG_REP_PASSWORD=${DB_REPLICATION_PASSWORD}
+        - PG_MASTER_HOST=${MASTER_HOST}
+        - PG_MASTER_PORT=${MASTER_PORT}
