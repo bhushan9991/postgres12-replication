@@ -1,3 +1,5 @@
+# Postgres 12.4 replication with Docker
+
 PostgreSQL with built-in replication is a great choice for a reliable and scalable database engine. The setup is going to be a master instance that handles both read and write operations. The other is a slave instance that will only serve read requests and that is because writing data is a whole different story than reading them.
 
 Let’s create [Dockerfile](./docker/postgres_master/Dockerfile) for master database.
